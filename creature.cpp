@@ -19,6 +19,12 @@ void Creature::simulateStep() {
 
 	// simulate actuators
 	energy += 1; // chloroplast, constant energy gain
+
+	// death
+	age += 1;
+	if (energy < 0 || age > 200) {
+		deathFlag = true;
+	}
 }
 
 Creature Creature::createOffspring()
@@ -42,6 +48,8 @@ void Creature::draw(sf::RenderWindow& window) {
 	sf::CircleShape circle = sf::CircleShape(radius);
 	circle.setPointCount(20);
 	circle.setPosition(position - sf::Vector2f(circle.getRadius(), circle.getRadius()));
-	circle.setFillColor(sf::Color(std::fminf(energy*2.55, 255), std::fminf(155+energy, 255), 0, 255));
+	circle.setFillColor(sf::Color(std::min(int(float(energy) * 2.55f), 255), std::min(155 + energy, 255), 0, 255));
+	if (deathFlag)
+		circle.setFillColor(sf::Color(50, 50, 0, 255));
 	window.draw(circle);
 }

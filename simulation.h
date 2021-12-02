@@ -12,7 +12,7 @@ public:
 	void initialize();
 	void simulateStep();
 	void simulateBehaviour();
-	void applyReproduction();
+	void checkFlags();
 	void resolvePhysics();
 	void draw(sf::RenderWindow& window);
 

@@ -14,23 +14,29 @@ void Simulation::initialize()
 void Simulation::simulateStep()
 {
 	simulateBehaviour();
-	applyReproduction();
+	checkFlags();
 	resolvePhysics();
 }
 void Simulation::simulateBehaviour()
 {	
 	for (int i = 0; i < creatures.size(); i++) {
 		Creature* c = &creatures[i];
-		c->simulateStep();
+		if (!c->deathFlag) {
+			c->simulateStep();
+		}
 	}
 }
 // Check creatures for reproduce flag, if true add offspring to creature list
-void Simulation::applyReproduction()
+void Simulation::checkFlags()
 {
 	for (int i = 0; i < creatures.size(); i++) {
 		Creature* c = &creatures[i];
 		if (c->reproduceFlag) {
 			creatures.push_back(c->createOffspring());
+		}
+		if (c->deathFlag) {
+			//creatures[i] = creatures[creatures.size() - 1]; // creature's remains persist, dont remove for now
+			//creatures.pop_back();
 		}
 	}
 }

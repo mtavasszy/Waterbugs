@@ -13,9 +13,12 @@ public:
 	void draw(sf::RenderWindow &window);
 
 	bool reproduceFlag = false;
+	bool deathFlag = false;
 
-	float energy;
-	float radius;
+	int energy;
+	int radius;
+	float age = 0;
+	int maxAge;
 
 	float direction;
 	sf::Vector2f position;
