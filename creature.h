@@ -8,7 +8,11 @@ class Creature {
 public:
 	Creature(sf::Vector2f p);
 	void simulateStep();
+	Creature createOffspring();
+	sf::Vector2f getRandomOffset();
 	void draw(sf::RenderWindow &window);
+
+	bool reproduceFlag = false;
 
 	float energy;
 	float size;

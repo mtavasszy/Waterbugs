@@ -11,6 +11,9 @@ public:
 
 	void initialize();
 	void simulateStep();
+	void simulateBehaviour();
+	void applyReproduction();
+	void resolvePhysics();
 	void draw(sf::RenderWindow& window);
 
 	std::vector<Creature> creatures;
