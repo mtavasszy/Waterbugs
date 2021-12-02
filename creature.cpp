@@ -3,8 +3,9 @@
 
 Creature::Creature(sf::Vector2f p) {
 	energy = 0;
-	size = 5;
+	radius = 5;
 	position = p;
+	velocity = sf::Vector2f(0, 0);
 	direction = 0;
 }
 
@@ -34,12 +35,12 @@ sf::Vector2f Creature::getRandomOffset()
 	std::random_device rd;  // Will be used to obtain a seed for the random number engine
 	std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
 	//std::uniform_real_distribution<> dis(-1.f, 1.f);
-	std::uniform_real_distribution<> dis(-size, size);
+	std::uniform_real_distribution<> dis(-radius*0.5f, radius*0.5f);
 	return sf::Vector2f(dis(gen), dis(gen));
 }
 
 void Creature::draw(sf::RenderWindow& window) {
-	sf::CircleShape circle = sf::CircleShape(size);
+	sf::CircleShape circle = sf::CircleShape(radius);
 	circle.setPointCount(20);
 	circle.setPosition(position - sf::Vector2f(circle.getRadius(), circle.getRadius()));
 	circle.setFillColor(sf::Color(energy*2.55, 155+energy, 0, 255));

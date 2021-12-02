@@ -15,7 +15,7 @@ public:
 	bool reproduceFlag = false;
 
 	float energy;
-	float size;
+	float radius;
 
 	float direction;
 	sf::Vector2f position;
