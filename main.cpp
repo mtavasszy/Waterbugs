@@ -4,14 +4,15 @@
 int main()
 {
     int targetFPS = 60;
+    sf::Vector2f windowSize(1280, 720);
 
     sf::ContextSettings settings;
     settings.antialiasingLevel = 8;
-    sf::RenderWindow window(sf::VideoMode(1280, 720), "Waterbugs", sf::Style::Default, settings);
+    sf::RenderWindow window(sf::VideoMode(windowSize.x, windowSize.y), "Waterbugs", sf::Style::Default, settings);
     window.setFramerateLimit(targetFPS);
     sf::Color clearColor(14, 135, 204, 255);
 
-    Simulation simulation = Simulation();
+    Simulation simulation(windowSize);
 
     while (window.isOpen())
     {

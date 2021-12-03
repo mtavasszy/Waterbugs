@@ -1,7 +1,8 @@
 #include "simulation.h"
 
-Simulation::Simulation()
+Simulation::Simulation(sf::Vector2f boxSize)
 {
+	this->boxSize = boxSize;
 	initialize();
 }
 
@@ -18,7 +19,7 @@ void Simulation::simulateStep()
 	resolvePhysics();
 }
 void Simulation::simulateBehaviour()
-{	
+{
 	for (int i = 0; i < creatures.size(); i++) {
 		Creature* c = &creatures[i];
 		if (!c->deathFlag) {
@@ -49,10 +50,12 @@ void Simulation::resolvePhysics()
 
 	for (int k = 0; k < steps; k++) {
 		for (int i = 0; i < creatures.size(); i++) {
+			Creature* c0 = &creatures[i];
+
+			// collisions with other creatures
 			for (int j = 0; j < creatures.size(); j++) {
 				if (i < j) {
 
-					Creature* c0 = &creatures[i];
 					Creature* c1 = &creatures[j];
 
 					float dx = c0->position.x - c1->position.x;
@@ -67,15 +70,33 @@ void Simulation::resolvePhysics()
 						sf::Vector2f d0 = c0->position - midpoint;
 						sf::Vector2f d1 = c1->position - midpoint;
 
-						float dist0 = sqrtf(d0.x*d0.x+d0.y*d0.y);
-						float dist1 = sqrtf(d1.x*d1.x+d1.y*d1.y);
+						float dist0 = sqrtf(d0.x * d0.x + d0.y * d0.y);
+						float dist1 = sqrtf(d1.x * d1.x + d1.y * d1.y);
 						float corr0 = rSum * 0.5 - dist0;
 						float corr1 = rSum * 0.5 - dist1;
 						c0->velocity += (d0 / dist0) * corr0;
 						c1->velocity += (d1 / dist1) * corr1;
-						
+
 					}
 				}
+			}
+
+			// walls
+			if (c0->position.x < c0->radius) {
+				c0->position.x = c0->radius;
+				c0->velocity.x = 0;
+			}
+			if (c0->position.y < c0->radius) {
+				c0->position.y = c0->radius;
+				c0->velocity.y = 0;
+			}
+			if (c0->position.x > boxSize.x - c0->radius) {
+				c0->position.x = boxSize.x - c0->radius;
+				c0->velocity.x = 0;
+			}
+			if (c0->position.y > boxSize.y - c0->radius) {
+				c0->position.y = boxSize.y - c0->radius;
+				c0->velocity.y = 0;
 			}
 		}
 		// translation
