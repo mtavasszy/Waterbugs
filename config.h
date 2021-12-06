@@ -11,7 +11,6 @@ public:
 	static constexpr float chloroplastGain = 1;
 	static constexpr float moveCost = 1;
 
-	// type colors;
 
 private:
 	Config() {};

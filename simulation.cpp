@@ -25,7 +25,7 @@ void Simulation::simulateBehaviour()
 {
 	for (int i = 0; i < creatures.size(); i++) {
 		Creature* c = &creatures[i];
-		if (!c->deathFlag) {
+		if (c->type != Creature::Type::DEAD) {
 			c->simulateBehaviour();
 		}
 	}
@@ -37,10 +37,6 @@ void Simulation::checkFlags()
 		Creature* c = &creatures[i];
 		if (c->reproduceFlag) {
 			creatures.push_back(c->createOffspring());
-		}
-		if (c->deathFlag) {
-			//creatures[i] = creatures[creatures.size() - 1]; // creature's remains persist, dont remove for now
-			//creatures.pop_back();
 		}
 	}
 }
@@ -85,7 +81,7 @@ void Simulation::resolvePhysics()
 		// apply motion
 		for (int i = 0; i < creatures.size(); i++) {
 			creatures[i].position += creatures[i].velocity;
-			creatures[i].velocity = sf::Vector2f(0,0);
+			creatures[i].velocity = sf::Vector2f(0, 0);
 		}
 	}
 }

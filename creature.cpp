@@ -1,5 +1,5 @@
 #include "creature.h"
-#include<random>
+#include <random>
 #include "config.h"
 
 Creature::Creature(sf::Vector2f p) {
@@ -26,7 +26,7 @@ void Creature::simulateBehaviour() {
 
 	// death
 	if (energy < 0 || age > maxAge) {
-		deathFlag = true;
+		type = Type::DEAD;
 	}
 	else { // if not dead
 		// simulate behaviour - sensor to brain to actuator
@@ -63,10 +63,10 @@ float Creature::getCreationCost()
 	return Config::plantCost; // TODO let this depend on size and appendages
 }
 
-sf::Color lerp(sf::Color x, sf::Color y, float a) {
-	int r = int(x.r * (1-a) + y.r * a);
-	int g = int(x.g * (1-a) + y.g * a);
-	int b = int(x.b * (1-a) + y.b * a);
+sf::Color mixColors(sf::Color x, sf::Color y, float factor) {
+	int r = int(x.r * (1 - factor) + y.r * factor);
+	int g = int(x.g * (1 - factor) + y.g * factor);
+	int b = int(x.b * (1 - factor) + y.b * factor);
 
 	return sf::Color(r, g, b);
 }
@@ -77,6 +77,9 @@ sf::Color Creature::getColor()
 	sf::Color youngColor;
 
 	switch (type) {
+	case Type::DEAD:
+		return deadColor;
+		break;
 	case Type::PLANT:
 		youngColor = sf::Color(170, 219, 30);
 		break;
@@ -99,7 +102,7 @@ sf::Color Creature::getColor()
 
 	// interpolate with age
 	float ageRatio = age / maxAge;
-	return lerp(youngColor, deadColor, ageRatio);
+	return mixColors(youngColor, deadColor, ageRatio * ageRatio);
 }
 
 void Creature::draw(sf::RenderWindow& window) {

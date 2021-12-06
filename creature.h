@@ -19,7 +19,6 @@ public:
 
 	// flags
 	bool reproduceFlag = false;
-	bool deathFlag = false;
 
 	// characteristics
 	int energy;
@@ -29,7 +28,7 @@ public:
 	float maxAge;
 	float lifeCost;
 
-	enum Type {PLANT, HERBIVORE, CARNIVORE, OMNIVORE, DETRITIVORE};
+	enum Type {PLANT, HERBIVORE, CARNIVORE, OMNIVORE, DETRITIVORE, DEAD};
 	Type type = Type::PLANT;
 	
 	// location and movement
