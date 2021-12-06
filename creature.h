@@ -10,6 +10,7 @@ public:
 	void simulateStep();
 	Creature createOffspring();
 	sf::Vector2f getRandomOffset();
+	sf::Color getColor();
 	void draw(sf::RenderWindow &window);
 
 	bool reproduceFlag = false;
