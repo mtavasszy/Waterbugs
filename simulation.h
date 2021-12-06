@@ -15,6 +15,7 @@ public:
 	void simulateBehaviour();
 	void checkFlags();
 	void resolvePhysics();
+	void checkCollision(Creature *c0, Creature *c1);
 	void draw(sf::RenderWindow& window);
 
 	sf::Vector2f boxSize;

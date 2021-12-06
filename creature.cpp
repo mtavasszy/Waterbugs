@@ -1,29 +1,41 @@
 #include "creature.h"
 #include<random>
+#include "config.h"
 
 Creature::Creature(sf::Vector2f p) {
-	energy = 0;
-	radius = 5;
 	position = p;
+
+	radius = 5; // size
+	energy = 0;
+	maxEnergy = 4 * radius * radius;
+	maxAge = 4 * radius * radius * 2; // todo config const
 	velocity = sf::Vector2f(0, 0);
-	direction = 0;
+	direction = 0; // TODO randomize
+	lifeCost = 0.f; // TODO should depend on size/type
 }
 
-void Creature::simulateStep() {
-	// simulate behaviour - sensor to brain to actuator
-
-	if (energy > 99) { // reproduction
-		energy -= 80;
-		reproduceFlag = true;
+void Creature::simulateBehaviour() {
+	// Constant energy from cloroplasts
+	if (type == Type::PLANT) {
+		energy += Config::chloroplastGain;
+		age += 1;
 	}
 
-	// simulate actuators
-	energy += 1; // chloroplast, constant energy gain
+	// constants
+	energy -= lifeCost;
 
 	// death
-	age += 1;
-	if (energy < 0 || age > 200) {
+	if (energy < 0 || age > maxAge) {
 		deathFlag = true;
+	}
+	else { // if not dead
+		// simulate behaviour - sensor to brain to actuator
+
+		// Reproduce if possible
+		if (energy >= maxEnergy) {
+			energy = maxEnergy;
+			reproduceFlag = true;
+		}
 	}
 }
 
@@ -31,8 +43,10 @@ Creature Creature::createOffspring()
 {
 	reproduceFlag = false;
 	Creature offspring = Creature(position + getRandomOffset());
-	// mutate
+	// TODO mutate
+	// TODO type depends on mutation
 
+	energy -= offspring.getCreationCost();
 	return offspring;
 }
 
@@ -42,6 +56,11 @@ sf::Vector2f Creature::getRandomOffset()
 	std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
 	std::uniform_real_distribution<> dis(-1.f, 1.f);
 	return sf::Vector2f(dis(gen), dis(gen));
+}
+
+float Creature::getCreationCost()
+{
+	return Config::plantCost; // TODO let this depend on size and appendages
 }
 
 sf::Color lerp(sf::Color x, sf::Color y, float a) {
