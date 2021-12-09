@@ -1,6 +1,8 @@
 #include "simulation.h"
+#include "plant.h"
 
 #include <SFML/Graphics.hpp>
+#include "config.h"
 
 Simulation::Simulation(sf::Vector2f boxSize)
 {
@@ -10,8 +12,9 @@ Simulation::Simulation(sf::Vector2f boxSize)
 
 void Simulation::initialize()
 {
-	Creature c(sf::Vector2f(640, 360));
-	creatures.push_back(c);
+	Plant plant(sf::Vector2f(640, 360), 5.f);
+	plant.chloroplastCount = 1;
+	plants.push_back(plant);
 }
 
 void Simulation::simulateStep()
@@ -23,20 +26,20 @@ void Simulation::simulateStep()
 
 void Simulation::simulateBehaviour()
 {
-	for (int i = 0; i < creatures.size(); i++) {
-		Creature* c = &creatures[i];
-		if (c->type != Creature::Type::DEAD) {
-			c->simulateBehaviour();
+	for (int i = 0; i < plants.size(); i++) {
+		Plant* p = &plants[i];
+		if (!p->deathFlag) {
+			p->simulateBehaviour();
 		}
 	}
 }
-// Check creatures for reproduce flag, if true add offspring to creature list
+// Check plants for reproduce flag, if true add offspring to creature list
 void Simulation::checkFlags()
 {
-	for (int i = 0; i < creatures.size(); i++) {
-		Creature* c = &creatures[i];
-		if (c->reproduceFlag) {
-			creatures.push_back(c->createOffspring());
+	for (int i = 0; i < plants.size(); i++) {
+		Plant* p = &plants[i];
+		if (p->reproduceFlag) {
+			plants.push_back(p->createOffspring());
 		}
 	}
 }
@@ -48,75 +51,95 @@ void Simulation::resolvePhysics()
 	int steps = 1;
 
 	for (int k = 0; k < steps; k++) {
-		for (int i = 0; i < creatures.size(); i++) {
-			Creature* c0 = &creatures[i];
+		for (int i = 0; i < plants.size(); i++) {
+			Plant* a = &plants[i];
 
-			// collisions with other creatures
-			for (int j = 0; j < creatures.size(); j++) {
+			// collisions with other plants
+			for (int j = 0; j < plants.size(); j++) {
 				if (i < j) {
-					Creature* c1 = &creatures[j];
-					checkCollision(c0, c1); //put logic and eating here
+					Plant* b = &plants[j];
+					checkCollision(a, b, i, j); 
 				}
 			}
 
 			// walls
-			if (c0->position.x < c0->radius) {
-				c0->position.x = c0->radius;
-				c0->velocity.x = 0;
+			if (a->position.x < a->radius) {
+				a->position.x = a->radius;
+				a->velocity.x = 0;
 			}
-			if (c0->position.y < c0->radius) {
-				c0->position.y = c0->radius;
-				c0->velocity.y = 0;
+			if (a->position.y < a->radius) {
+				a->position.y = a->radius;
+				a->velocity.y = 0;
 			}
-			if (c0->position.x > boxSize.x - c0->radius) {
-				c0->position.x = boxSize.x - c0->radius;
-				c0->velocity.x = 0;
+			if (a->position.x > boxSize.x - a->radius) {
+				a->position.x = boxSize.x - a->radius;
+				a->velocity.x = 0;
 			}
-			if (c0->position.y > boxSize.y - c0->radius) {
-				c0->position.y = boxSize.y - c0->radius;
-				c0->velocity.y = 0;
+			if (a->position.y > boxSize.y - a->radius) {
+				a->position.y = boxSize.y - a->radius;
+				a->velocity.y = 0;
 			}
 		}
 
 		// apply motion
-		for (int i = 0; i < creatures.size(); i++) {
-			creatures[i].position += creatures[i].velocity;
-			creatures[i].velocity = sf::Vector2f(0, 0);
+		for (int i = 0; i < plants.size(); i++) {
+			plants[i].position += plants[i].velocity;
+			plants[i].velocity = sf::Vector2f(0, 0);
 		}
 	}
 }
 
-void Simulation::checkCollision(Creature* c0, Creature* c1)
+// Check for a collision, and resolve eating and/or physics
+void Simulation::checkCollision(Plant* a, Plant* b, int i, int j)
 {
-	float dx = c0->position.x - c1->position.x;
-	float dy = c0->position.y - c1->position.y;
+	float dx = a->position.x - b->position.x;
+	float dy = a->position.y - b->position.y;
 	float dSqr = dx * dx + dy * dy;
 
-	float rSum = c0->radius + c1->radius;
+	float rSum = a->radius + b->radius;
 	float rSumSqr = rSum * rSum;
 
-	if (dSqr < rSumSqr) { // colliding, resolve
+	if (dSqr < rSumSqr) {
+		// If they don't eat each other, resolve collision
+		if (!checkEat(a, b, i, j) && !checkEat(b, a, j, i)) {
 
-		// eating
+			// push each other away
+			sf::Vector2f midpoint = (a->position + b->position) * 0.5f;
+			sf::Vector2f d_a = a->position - midpoint;
+			sf::Vector2f d_b = b->position - midpoint;
 
-		// push each other away
-		sf::Vector2f midpoint = (c0->position + c1->position) * 0.5f;
-		sf::Vector2f d0 = c0->position - midpoint;
-		sf::Vector2f d1 = c1->position - midpoint;
-
-		float dist0 = sqrtf(d0.x * d0.x + d0.y * d0.y);
-		float dist1 = sqrtf(d1.x * d1.x + d1.y * d1.y);
-		float corr0 = rSum * 0.5 - dist0;
-		float corr1 = rSum * 0.5 - dist1;
-		c0->velocity += (d0 / dist0) * corr0;
-		c1->velocity += (d1 / dist1) * corr1;
+			float dist_a = sqrtf(d_a.x * d_a.x + d_a.y * d_a.y);
+			float dist_b = sqrtf(d_b.x * d_b.x + d_b.y * d_b.y);
+			float corr_a = rSum * 0.5f - dist_a;
+			float corr_b = rSum * 0.5f - dist_b;
+			a->velocity += (d_a / dist_a) * corr_a;
+			b->velocity += (d_b / dist_b) * corr_b;
+		}
 	}
 }
 
+// Check if Plant a eats Plant b, return true if this is the case
+bool Simulation::checkEat(Plant* a, Plant* b, int i, int j)
+{
+	if (/*!a->mouths.empty() && */a->size > b->size * Config::eatSizeFactor) { // TODO check mouth direction
+		// Herbivore eats plant
+		a->energy += (b->getCreationCost() + b->energy) * Config::digestionEffiency;
+		// Remove b
+		plants[j] = plants[plants.size() - 1];
+		plants.pop_back();
+
+		return true;
+	}
+
+	return false;
+}
+
+
+
 void Simulation::draw(sf::RenderWindow& window)
 {
-	for (int i = 0; i < creatures.size(); i++) {
-		Creature* c = &creatures[i];
-		c->draw(window);
+	for (int i = 0; i < plants.size(); i++) {
+		Plant* p = &plants[i];
+		p->draw(window);
 	}
 }

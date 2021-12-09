@@ -5,13 +5,13 @@
 int main()
 {
     int targetFPS = 60;
-    float fps = targetFPS;
-    float frameCount = 0;
-    sf::Vector2f windowSize(1280, 720);
+    float fps = float(targetFPS);
+    float frameCount = 0.f;
+    sf::Vector2f windowSize(1280.f, 720.f);
 
     sf::ContextSettings settings;
     settings.antialiasingLevel = 8;
-    sf::RenderWindow window(sf::VideoMode(windowSize.x, windowSize.y), "Waterbugs", sf::Style::Default, settings);
+    sf::RenderWindow window(sf::VideoMode(int(windowSize.x), int(windowSize.y)), "Waterbugs", sf::Style::Default, settings);
     window.setFramerateLimit(targetFPS);
     sf::Color clearColor(14, 135, 204, 255);
 
@@ -34,7 +34,7 @@ int main()
         window.display();
         
         // Update title info
-        std::string creatureCountStr = std::to_string(simulation.creatures.size()) + " creature" + (simulation.creatures.size() > 1 ? "s" : "");
+        std::string creatureCountStr = std::to_string(simulation.plants.size()) + " creature" + (simulation.plants.size() > 1 ? "s" : "");
 
         frameCount++;
         if (clock.getElapsedTime().asSeconds() >= 1.f) {

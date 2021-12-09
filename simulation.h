@@ -3,7 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <vector>
-#include "creature.h"
+#include "plant.h"
 
 class Simulation {
 
@@ -15,11 +15,12 @@ public:
 	void simulateBehaviour();
 	void checkFlags();
 	void resolvePhysics();
-	void checkCollision(Creature *c0, Creature *c1);
+	void checkCollision(Plant *a, Plant *b, int i, int j);
+	bool checkEat(Plant* a, Plant* b, int i, int j);
 	void draw(sf::RenderWindow& window);
 
 	sf::Vector2f boxSize;
-	std::vector<Creature> creatures;
+	std::vector<Plant> plants;
 };
 
 #endif  // SIMULATION_H_
