@@ -57,8 +57,8 @@ Plant Plant::createOffspring()
 {
 	reproduceFlag = false;
 	
-	Plant offspring = Plant(position + getRandomOffset(), radius);
-	offspring.radius = radius;
+	float newradius = radius;
+	Plant offspring = Plant(position + getRandomOffset(newradius), radius);
 	offspring.chloroplastCount = 1;
 	// TODO mutate
 	// TODO type depends on mutation
@@ -67,9 +67,10 @@ Plant Plant::createOffspring()
 	return offspring;
 }
 
-sf::Vector2f Plant::getRandomOffset()
+sf::Vector2f Plant::getRandomOffset(float newradius)
 {
-	return sf::Vector2f(rnd()-0.5f, rnd() - 0.5f);
+	float a = 2 * PI * rnd();
+	return sf::Vector2f(cos(a), sin(a)) * (radius+newradius) * 0.9f;
 }
 
 float Plant::getCreationCost()

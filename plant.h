@@ -15,7 +15,7 @@ public:
 	void simulateBehaviour();
 
 	Plant createOffspring();
-	sf::Vector2f getRandomOffset();
+	sf::Vector2f getRandomOffset(float newradius);
 	float getCreationCost();
 
 	sf::Color getColor();
