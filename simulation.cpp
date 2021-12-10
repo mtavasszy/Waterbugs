@@ -17,19 +17,21 @@ void Simulation::initialize()
 	plants.push_back(plant);
 }
 
-void Simulation::simulateStep()
+void Simulation::update(float dt)
 {
-	simulateBehaviour();
+	simulateBehaviour(dt);
 	checkFlags();
-	resolvePhysics();
+	resolveCollisions(); // TODO multiple steps per frame?
+	applyWaterForce();
+	applyMotion(dt);
 }
 
-void Simulation::simulateBehaviour()
+void Simulation::simulateBehaviour(float dt)
 {
 	for (int i = 0; i < plants.size(); i++) {
 		Plant* p = &plants[i];
 		if (!p->deathFlag) {
-			p->simulateBehaviour();
+			p->simulateBehaviour(dt);
 		}
 	}
 }
@@ -44,47 +46,33 @@ void Simulation::checkFlags()
 	}
 }
 
-void Simulation::resolvePhysics()
+void Simulation::resolveCollisions()
 {
-	// resolve forces
-	// resolve collisions
-	int steps = 1;
+	for (int i = 0; i < plants.size(); i++) {
+		Plant* a = &plants[i];
 
-	for (int k = 0; k < steps; k++) {
-		for (int i = 0; i < plants.size(); i++) {
-			Plant* a = &plants[i];
-
-			// collisions with other plants
-			for (int j = 0; j < plants.size(); j++) {
-				if (i < j) {
-					Plant* b = &plants[j];
-					checkCollision(a, b, i, j); 
-				}
-			}
-
-			// walls
-			if (a->position.x < a->radius) {
-				a->position.x = a->radius;
-				a->velocity.x = 0;
-			}
-			if (a->position.y < a->radius) {
-				a->position.y = a->radius;
-				a->velocity.y = 0;
-			}
-			if (a->position.x > boxSize.x - a->radius) {
-				a->position.x = boxSize.x - a->radius;
-				a->velocity.x = 0;
-			}
-			if (a->position.y > boxSize.y - a->radius) {
-				a->position.y = boxSize.y - a->radius;
-				a->velocity.y = 0;
-			}
+		// collisions with other plants
+		for (int j = i + 1; j < plants.size(); j++) {
+			Plant* b = &plants[j];
+			checkCollision(a, b, i, j);
 		}
 
-		// apply motion
-		for (int i = 0; i < plants.size(); i++) {
-			plants[i].position += plants[i].velocity;
-			plants[i].velocity = sf::Vector2f(0, 0);
+		// walls
+		if (a->position.x < a->radius) {
+			a->position.x = a->radius;
+			a->velocity.x = 0;
+		}
+		if (a->position.y < a->radius) {
+			a->position.y = a->radius;
+			a->velocity.y = 0;
+		}
+		if (a->position.x > boxSize.x - a->radius) {
+			a->position.x = boxSize.x - a->radius;
+			a->velocity.x = 0;
+		}
+		if (a->position.y > boxSize.y - a->radius) {
+			a->position.y = boxSize.y - a->radius;
+			a->velocity.y = 0;
 		}
 	}
 }
@@ -101,7 +89,7 @@ void Simulation::checkCollision(Plant* a, Plant* b, int i, int j)
 
 	if (dSqr < rSumSqr) {
 		// If they don't eat each other, resolve collision
-		if (!checkEat(a, b, i, j) && !checkEat(b, a, j, i)) {
+		//if (!checkEat(a, b, i, j) && !checkEat(b, a, j, i)) { // TODO animal only
 
 			// push each other away
 			sf::Vector2f midpoint = (a->position + b->position) * 0.5f;
@@ -114,7 +102,7 @@ void Simulation::checkCollision(Plant* a, Plant* b, int i, int j)
 			float corr_b = rSum * 0.5f - dist_b;
 			a->velocity += (d_a / dist_a) * corr_a;
 			b->velocity += (d_b / dist_b) * corr_b;
-		}
+		//}
 	}
 }
 
@@ -132,6 +120,18 @@ bool Simulation::checkEat(Plant* a, Plant* b, int i, int j)
 	}
 
 	return false;
+}
+
+void Simulation::applyWaterForce()
+{
+}
+
+void Simulation::applyMotion(float dt)
+{
+	// apply motion
+	for (int i = 0; i < plants.size(); i++) {
+		plants[i].position += plants[i].velocity * dt;
+	}
 }
 
 

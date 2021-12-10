@@ -11,12 +11,14 @@ public:
 	Simulation(sf::Vector2f boxSize);
 
 	void initialize();
-	void simulateStep();
-	void simulateBehaviour();
+	void update(float dt);
+	void simulateBehaviour(float dt);
 	void checkFlags();
-	void resolvePhysics();
+	void resolveCollisions();
 	void checkCollision(Plant *a, Plant *b, int i, int j);
 	bool checkEat(Plant* a, Plant* b, int i, int j);
+	void applyWaterForce();
+	void applyMotion(float dt);
 	void draw(sf::RenderWindow& window);
 
 	sf::Vector2f boxSize;

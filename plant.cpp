@@ -9,9 +9,10 @@ Plant::Plant(sf::Vector2f p, float r) {
 	radius = r;
 	size = r * r;
 
+	mass = size * Config::plantMass;
 	energy = 0;
-	maxEnergy = radius * radius;
-	maxAge = radius * radius * Config::ageSizeFactor;
+	maxEnergy = size * Config::energySizeFactor;
+	maxAge = size * Config::ageSizeFactor;
 
 	velocity = sf::Vector2f(0, 0);
 	direction = rnd() * 2 * PI; // TODO randomize
@@ -30,13 +31,13 @@ float Plant::rnd()
 	return float(dis(gen));
 }
 
-void Plant::simulateBehaviour() {
+void Plant::simulateBehaviour(float dt) {
 	// constants
-	energy -= lifeCost;
-	age += 1;
+	energy -= lifeCost * dt;
+	age += 1.f * dt;
 
 	// Constant energy from cloroplasts
-	energy += chloroplastCount * Config::chloroplastGain;
+	energy += chloroplastCount * Config::chloroplastGain * dt;
 
 	// death
 	if (energy < 0 || age > maxAge) {

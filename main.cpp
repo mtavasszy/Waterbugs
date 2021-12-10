@@ -4,7 +4,8 @@
 
 int main()
 {
-    int targetFPS = 60;
+    float targetFPS = 60.f;
+    float targetFrameTime = 1.f / targetFPS;
     float fps = float(targetFPS);
     float frameCount = 0.f;
     sf::Vector2f windowSize(1280.f, 720.f);
@@ -12,7 +13,7 @@ int main()
     sf::ContextSettings settings;
     settings.antialiasingLevel = 8;
     sf::RenderWindow window(sf::VideoMode(int(windowSize.x), int(windowSize.y)), "Waterbugs", sf::Style::Default, settings);
-    window.setFramerateLimit(targetFPS);
+    window.setFramerateLimit(int(targetFPS));
     sf::Color clearColor(14, 135, 204, 255);
 
     Simulation simulation(windowSize);
@@ -28,7 +29,7 @@ int main()
                 window.close();
         }
 
-        simulation.simulateStep();
+        simulation.update(targetFrameTime);
         window.clear(clearColor);
         simulation.draw(window);
         window.display();

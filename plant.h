@@ -12,7 +12,8 @@ public:
 
 	void initRandom();
 	float rnd();
-	void simulateBehaviour();
+
+	void simulateBehaviour(float dt);
 
 	Plant createOffspring();
 	sf::Vector2f getRandomOffset(float newradius);
@@ -30,6 +31,7 @@ public:
 	bool deathFlag = false;
 
 	// characteristics
+	float mass;
 	float energy;
 	float maxEnergy;
 	float radius;
