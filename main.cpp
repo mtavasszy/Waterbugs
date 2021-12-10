@@ -1,6 +1,8 @@
 #include <SFML/Graphics.hpp>
 #include <sstream>
 #include "simulation.h"
+#include "Vec2.h"
+
 
 int main()
 {
@@ -8,7 +10,7 @@ int main()
     float targetFrameTime = 1.f / targetFPS;
     float fps = float(targetFPS);
     float frameCount = 0.f;
-    sf::Vector2f windowSize(1280.f, 720.f);
+    Vec2f windowSize(1280.f, 720.f);
 
     sf::ContextSettings settings;
     settings.antialiasingLevel = 8;

@@ -1,8 +1,9 @@
 #include "plant.h"
 #include <random>
 #include "config.h"
+#include "Vec2.h"
 
-Plant::Plant(sf::Vector2f p, float r) {
+Plant::Plant(Vec2f p, float r) {
 	initRandom();
 
 	position = p;
@@ -14,7 +15,7 @@ Plant::Plant(sf::Vector2f p, float r) {
 	maxEnergy = size * Config::energySizeFactor;
 	maxAge = size * Config::ageSizeFactor;
 
-	velocity = sf::Vector2f(0, 0);
+	velocity = Vec2f(0, 0);
 	direction = rnd() * 2 * PI; // TODO randomize
 	lifeCost = 0.f; // TODO should depend on size/type
 }
@@ -68,10 +69,10 @@ Plant Plant::createOffspring()
 	return offspring;
 }
 
-sf::Vector2f Plant::getRandomOffset(float newradius)
+Vec2f Plant::getRandomOffset(float newradius)
 {
 	float a = 2 * PI * rnd();
-	return sf::Vector2f(cos(a), sin(a)) * (radius+newradius) * 0.9f;
+	return Vec2f(cos(a), sin(a)) * (radius+newradius) * 0.9f;
 }
 
 float Plant::getCreationCost()
@@ -107,7 +108,8 @@ void Plant::draw(sf::RenderWindow& window) {
 
 	sf::CircleShape circle = sf::CircleShape(radius);
 	circle.setPointCount(20);
-	circle.setPosition(position - sf::Vector2f(circle.getRadius(), circle.getRadius()));
+	Vec2f drawPos = position - Vec2f(circle.getRadius());
+	circle.setPosition(sf::Vector2f(drawPos.x, drawPos.y));
 	circle.setFillColor(getColor());
 	window.draw(circle);
 }

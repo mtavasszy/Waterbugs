@@ -3,12 +3,13 @@
 
 #include <SFML/Graphics.hpp>
 #include <vector>
+#include "Vec2.h"
 #include "plant.h"
 
 class Simulation {
 
 public:
-	Simulation(sf::Vector2f boxSize);
+	Simulation(Vec2f boxSize);
 
 	void initialize();
 	void update(float dt);
@@ -21,7 +22,7 @@ public:
 	void applyMotion(float dt);
 	void draw(sf::RenderWindow& window);
 
-	sf::Vector2f boxSize;
+	Vec2f boxSize;
 	std::vector<Plant> plants;
 };
 

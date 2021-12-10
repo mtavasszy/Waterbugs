@@ -4,7 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include "config.h"
 
-Simulation::Simulation(sf::Vector2f boxSize)
+Simulation::Simulation(Vec2f boxSize)
 {
 	this->boxSize = boxSize;
 	initialize();
@@ -12,7 +12,7 @@ Simulation::Simulation(sf::Vector2f boxSize)
 
 void Simulation::initialize()
 {
-	Plant plant(sf::Vector2f(640, 360), 5.f);
+	Plant plant(Vec2f(640, 360), 5.f);
 	plant.chloroplastCount = 1;
 	plants.push_back(plant);
 }
@@ -92,9 +92,9 @@ void Simulation::checkCollision(Plant* a, Plant* b, int i, int j)
 		//if (!checkEat(a, b, i, j) && !checkEat(b, a, j, i)) { // TODO animal only
 
 			// push each other away
-			sf::Vector2f midpoint = (a->position + b->position) * 0.5f;
-			sf::Vector2f d_a = a->position - midpoint;
-			sf::Vector2f d_b = b->position - midpoint;
+			Vec2f midpoint = (a->position + b->position) * 0.5f;
+			Vec2f d_a = a->position - midpoint;
+			Vec2f d_b = b->position - midpoint;
 
 			float dist_a = sqrtf(d_a.x * d_a.x + d_a.y * d_a.y);
 			float dist_b = sqrtf(d_b.x * d_b.x + d_b.y * d_b.y);

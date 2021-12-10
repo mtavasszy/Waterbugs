@@ -4,11 +4,12 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <random>
+#include "Vec2.h"
 
 class Plant {
 
 public:
-	Plant(sf::Vector2f p, float r);
+	Plant(Vec2f p, float r);
 
 	void initRandom();
 	float rnd();
@@ -16,7 +17,7 @@ public:
 	void simulateBehaviour(float dt);
 
 	Plant createOffspring();
-	sf::Vector2f getRandomOffset(float newradius);
+	Vec2f getRandomOffset(float newradius);
 	float getCreationCost();
 
 	sf::Color getColor();
@@ -42,9 +43,9 @@ public:
 	
 	// location and movement
 	float direction;
-	sf::Vector2f position;
-	sf::Vector2f velocity;
-	sf::Vector2f force;
+	Vec2f position;
+	Vec2f velocity;
+	Vec2f force;
 
 	// appendages
 	int chloroplastCount;
