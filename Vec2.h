@@ -31,7 +31,7 @@ template <class T> const Vec2<T> operator- (const Vec2<T> & p1, const Vec2<T> & 
 }
 
 template <class T> const Vec2<T> operator- (const Vec2<T> & p) {
-    return Vec2<T> (-p.x, -p.y, -p[2]);
+    return Vec2<T> (-p.x, -p.y);
 }
 
 template <class T> const Vec2<T> operator/ (const Vec2<T> & p, float divisor) {
@@ -52,7 +52,7 @@ template <class T> bool operator>= (const Vec2<T> & a, const Vec2<T> & b) {
 
 
 /**
- * Vector in 3 dimensions, with basics operators overloaded.
+ * Vector in 2 dimensions, with basics operators overloaded.
  */
 template <typename T>
 class Vec2 {
@@ -128,20 +128,17 @@ public:
         return (*this);
     };
     inline T getSquaredLength() const {
-        return (dotProduct (*this, *this));
+        return (dot(*this, *this));
     };
     inline T getLength() const {
         return (T)sqrt (getSquaredLength());
     };
     /// Return length after normalization
-    inline T normalize (void) {
+    inline Vec2 normalize () {
         T length = getLength();
         if (length == 0.0f)
-            return 0;
-        T rezLength = 1.0f / length;
-        x *= rezLength;
-        y *= rezLength;
-        return length;
+            return Vec2(T());
+        return Vec2(x, y) / length;;
     };
     inline void fromTo (const Vec2 & P1, const Vec2 & P2) {
         x = P2.x - P1.x;
@@ -150,7 +147,7 @@ public:
     inline float transProduct (const Vec2 & v) const {
         return (x*v.x + y*v.y);
     }
-    inline Vec2 getOrthogonal (const Vec2& v) {
+    static inline Vec2 getOrthogonal (const Vec2& v) {
         return Vec2(v.y, -v.x);
     }
     static inline Vec2 segment (const Vec2 & a, const Vec2 & b) {
@@ -159,7 +156,7 @@ public:
         r.y = b.y - a.y;
         return r;
     };
-    static inline T dotProduct(const Vec2 & a, const Vec2 & b) {
+    static inline T dot(const Vec2 & a, const Vec2 & b) {
         return (a.x * b.x + a.y * b.y);
     }
     static inline T squaredDistance (const Vec2 &v1, const Vec2 &v2) {

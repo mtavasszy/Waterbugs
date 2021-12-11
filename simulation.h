@@ -15,8 +15,8 @@ public:
 	void update(float dt);
 	void simulateBehaviour(float dt);
 	void checkFlags();
-	void resolveCollisions();
-	void checkCollision(Plant *a, Plant *b, int i, int j);
+	void resolveCollisions(float dt);
+	void checkCollision(Plant *a, Plant *b, int i, int j, float dt);
 	bool checkEat(Plant* a, Plant* b, int i, int j);
 	void applyWaterForce();
 	void applyMotion(float dt);
