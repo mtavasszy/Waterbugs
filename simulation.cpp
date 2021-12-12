@@ -13,15 +13,9 @@ Simulation::Simulation(Vec2f boxSize)
 
 void Simulation::initialize()
 {
-	//Plant plant(Vec2f(640, 360), 5.f);
-	//plant.chloroplastCount = 1;
-	//plants.push_back(plant);
-	Plant p0(Vec2f(520, 355), 10.f);
-	p0.velocity.x = 80;
-	Plant p1(Vec2f(760, 365), 10.f);
-	p1.velocity.x = -80;
-	plants.push_back(p0);
-	plants.push_back(p1);
+	Plant plant(Vec2f(640, 360), 5.f);
+	plant.chloroplastCount = 1;
+	plants.push_back(plant);
 }
 
 void Simulation::update(float dt)
@@ -67,19 +61,19 @@ void Simulation::resolveCollisions(float dt)
 		// walls
 		if (a->position.x < a->radius) {
 			a->position.x = a->radius;
-			a->velocity.x = 0;
+			a->velocity.x = -a->velocity.x;
 		}
 		if (a->position.y < a->radius) {
 			a->position.y = a->radius;
-			a->velocity.y = 0;
+			a->velocity.y = -a->velocity.y;
 		}
 		if (a->position.x > boxSize.x - a->radius) {
 			a->position.x = boxSize.x - a->radius;
-			a->velocity.x = 0;
+			a->velocity.x = -a->velocity.x;
 		}
 		if (a->position.y > boxSize.y - a->radius) {
 			a->position.y = boxSize.y - a->radius;
-			a->velocity.y = 0;
+			a->velocity.y = -a->velocity.y;
 		}
 	}
 }
@@ -96,10 +90,8 @@ void Simulation::checkCollision(Plant* a, Plant* b, int i, int j, float dt)
 	if (distSqr < rSumSqr) {
 		// If they don't eat each other, resolve collision
 		//if (!checkEat(a, b, i, j) && !checkEat(b, a, j, i)) { // TODO animal only
-		//float dist = sqrt(distSqr);
 
 		float dist = sqrt(distSqr);
-		Vec2f dv = b->velocity - a->velocity;
 		Vec2f un = dp / dist;
 		Vec2f ut(-un.y, un.x);
 
@@ -124,46 +116,9 @@ void Simulation::checkCollision(Plant* a, Plant* b, int i, int j, float dt)
 
 		// correct position
 		Vec2f midpoint = (a->position + b->position) * 0.5f;
-		Vec2f d_a = a->position - midpoint;
-		Vec2f d_b = b->position - midpoint;
-
-		float dist_a = sqrtf(d_a.x * d_a.x + d_a.y * d_a.y);
-		float dist_b = sqrtf(d_b.x * d_b.x + d_b.y * d_b.y);
-		float corr_a = rSum * 0.5f - dist_a;
-		float corr_b = rSum * 0.5f - dist_b;
-		a->position += (d_a / dist_a) * corr_a;
-		b->position += (d_b / dist_b) * corr_b;
-
-		
-
-		//Vec2f dv = b->velocity - a->velocity;
-		//Vec2f normal = dp / dist;
-
-		//// Calculate relative velocity in terms of the normal direction
-		//float velAlongNormal = Vec2f::dot(dv, normal);
-
-		//// Do not resolve if velocities are separating
-		//if (velAlongNormal <= 0) {
-		//	// Calculate restitution
-		//	float e = 1.f;//  min(A.restitution, B.restitution) - "bouncyness"
-
-		//	// Calculate impulse scalar
-		//	float imp = ((-(1 + e) * velAlongNormal) / (a->invMass + b->invMass)) * dt;
-		//	float penetration = rSum - dist;
-		//	float slop = 0.01f;
-		//	float percent = 0.2;
-
-		//	Vec2f corr = std::max(penetration - slop, 0.f) / (a->invMass + b->invMass) * percent * normal;
-
-		//	// Apply impulse
-		//	a->velocity -= a->invMass * (normal * imp - corr);
-		//	b->velocity += b->invMass * (normal * imp + corr);
+		a->position = midpoint - un * a->radius;
+		b->position = midpoint + un * b->radius;
 		//}
-		//}
-		//Vec2f dv = b->velocity - a->velocity;
-		//a->velocity -= -(2 * b->mass / (a->mass + b->mass)) * Vec2f::dot(-dv, -dp) / distSqr * -dp;
-		//b->velocity -= -(2 * a->mass / (a->mass + b->mass)) * Vec2f::dot(dv, dp) / distSqr * dp;
-
 	}
 }
 
