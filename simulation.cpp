@@ -194,7 +194,7 @@ void Simulation::applyMotion(float dt)
 		plants[i].position += plants[i].velocity * dt;
 
 		// friction
-		//plants[i].velocity *= powf(0.8f, dt);
+		plants[i].velocity *= powf(Config::friction, dt);
 	}
 }
 

@@ -60,7 +60,12 @@ Plant Plant::createOffspring()
 	reproduceFlag = false;
 	
 	float newradius = radius;
-	Plant offspring = Plant(position + getRandomOffset(newradius), radius);
+	Vec2f offset = getRandomOffset(newradius);
+	position -= offset * 0.5;
+	velocity -= Config::replicatePushSpeed * offset;
+	Vec2f newPos = position + offset;
+	Plant offspring = Plant(newPos, radius);
+	offspring.velocity = Config::replicatePushSpeed * offset;
 	offspring.chloroplastCount = 1;
 	// TODO mutate
 	// TODO type depends on mutation
@@ -72,7 +77,7 @@ Plant Plant::createOffspring()
 Vec2f Plant::getRandomOffset(float newradius)
 {
 	float a = 2 * PI * rnd();
-	return Vec2f(cos(a), sin(a)) * (radius+newradius) * 0.9f;
+	return Vec2f(cos(a), sin(a)) * (radius+newradius);
 }
 
 float Plant::getCreationCost()
@@ -94,7 +99,7 @@ sf::Color Plant::getColor()
 	if (deathFlag)
 		return deadColor;
 
-	sf::Color youngColor = sf::Color(170, 219, 30);;
+	sf::Color youngColor = sf::Color(170, 219, 30);
 
 	// interpolate with age
 	float ageRatio = age / maxAge;
@@ -110,6 +115,6 @@ void Plant::draw(sf::RenderWindow& window) {
 	circle.setPointCount(20);
 	Vec2f drawPos = position - Vec2f(circle.getRadius());
 	circle.setPosition(sf::Vector2f(drawPos.x, drawPos.y));
-	circle.setFillColor(getColor());
+	circle.setFillColor(Config::plantColor);
 	window.draw(circle);
 }
