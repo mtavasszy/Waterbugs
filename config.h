@@ -8,7 +8,7 @@ class Config {
 
 public:
 	// simulator
-	static constexpr int gridCellSize = 10;
+	static constexpr int gridCellSize = 40;
 
 	// simulation
 	static constexpr float friction = 0.3f;

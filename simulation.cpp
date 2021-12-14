@@ -62,7 +62,7 @@ void Simulation::resolveCollisions(float dt)
 
 	for (int i = 0; i < plants.size(); i++) {
 		Plant* a = &plants[i];
-		
+
 		// add new to grid
 		int gridX0 = int((plants[i].position.x - plants[i].radius) * invGridCellSize);
 		int gridX1 = int((plants[i].position.x + plants[i].radius) * invGridCellSize);
@@ -72,10 +72,10 @@ void Simulation::resolveCollisions(float dt)
 		bool isSingleCell = (gridX0 == gridX1) && (gridY0 == gridY1);
 
 		if (isSingleCell) {
-			int coord = gridX0+gridY0*int(boxSize.x);
+			int coord = gridX0 + gridY0 * int(boxSize.x * invGridCellSize);
 			if (collisionGrid.count(coord) == 0) {
 				// no other items in grid cell yet, add index
-				collisionGrid[coord] = std::vector<int>(i);
+				collisionGrid[coord] = std::vector<int>{ i };
 			}
 			else {
 				// list of items found, check collisions
@@ -91,10 +91,10 @@ void Simulation::resolveCollisions(float dt)
 
 			for (int xx = gridX0; xx <= gridX1; xx++) {
 				for (int yy = gridY0; yy <= gridY1; yy++) {
-					int coord = xx + int(yy*boxSize.x);
+					int coord = xx + yy * int(boxSize.x * invGridCellSize);
 					if (collisionGrid.count(coord) == 0) {
 						// no other items in grid cell yet, add index
-						collisionGrid[coord] = std::vector<int>(i);
+						collisionGrid[coord] = std::vector<int>{ i };
 					}
 					else {
 						// list of items found, check collisions
@@ -111,37 +111,6 @@ void Simulation::resolveCollisions(float dt)
 					}
 				}
 			}
-		}
-
-		// walls
-		if (a->position.x < a->radius) {
-			a->position.x = a->radius;
-			a->velocity.x = -a->velocity.x;
-		}
-		if (a->position.y < a->radius) {
-			a->position.y = a->radius;
-			a->velocity.y = -a->velocity.y;
-		}
-		if (a->position.x > boxSize.x - a->radius) {
-			a->position.x = boxSize.x - a->radius;
-			a->velocity.x = -a->velocity.x;
-		}
-		if (a->position.y > boxSize.y - a->radius) {
-			a->position.y = boxSize.y - a->radius;
-			a->velocity.y = -a->velocity.y;
-		}
-	}
-}
-
-void Simulation::resolveCollisionsOld(float dt)
-{
-	for (int i = 0; i < plants.size(); i++) {
-		Plant* a = &plants[i];
-
-		// collisions with other plants
-		for (int j = i + 1; j < plants.size(); j++) {
-			Plant* b = &plants[j];
-			checkCollision(a, b, i, j, dt);
 		}
 
 		// walls

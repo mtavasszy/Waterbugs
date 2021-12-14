@@ -107,12 +107,8 @@ sf::Color Plant::getColor()
 }
 
 void Plant::draw(sf::RenderWindow& window) {
-	//for (Mouth m : mouths) {
-	//	m.draw(window, position, direction, radius);
-	//}
-
 	sf::CircleShape circle = sf::CircleShape(radius);
-	circle.setPointCount(20);
+	//circle.setPointCount(20);
 	Vec2f drawPos = position - Vec2f(circle.getRadius());
 	circle.setPosition(sf::Vector2f(drawPos.x, drawPos.y));
 	circle.setFillColor(Config::plantColor);
