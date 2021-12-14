@@ -18,6 +18,8 @@ Plant::Plant(unsigned int seed, Vec2f p, float r) {
 	velocity = Vec2f(0, 0);
 	direction = rnd() * 2 * PI; // TODO randomize
 	lifeCost = 0.f; // TODO should depend on size/type
+
+	initDrawShape();
 }
 
 void Plant::initRandom(unsigned int seed)
@@ -105,11 +107,15 @@ sf::Color Plant::getColor()
 	return mixColors(youngColor, deadColor, ageRatio * ageRatio);
 }
 
-void Plant::draw(sf::RenderWindow& window) {
-	sf::CircleShape circle = sf::CircleShape(radius);
+void Plant::initDrawShape()
+{
+	circle = sf::CircleShape(radius);
 	//circle.setPointCount(20);
-	Vec2f drawPos = position - Vec2f(circle.getRadius());
-	circle.setPosition(sf::Vector2f(drawPos.x, drawPos.y));
 	circle.setFillColor(Config::plantColor);
+}
+
+void Plant::draw(sf::RenderWindow& window) {
+	const Vec2f drawPos = position - Vec2f(circle.getRadius());
+	circle.setPosition(sf::Vector2f(drawPos.x, drawPos.y));
 	window.draw(circle);
 }

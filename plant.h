@@ -21,7 +21,11 @@ public:
 	float getCreationCost();
 
 	sf::Color getColor();
+	void initDrawShape();
 	void draw(sf::RenderWindow &window);
+
+	// draw
+	sf::CircleShape circle;
 
 	// random
 	std::mt19937 gen; // Standard mersenne_twister_engine seeded with rd()
