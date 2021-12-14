@@ -28,7 +28,7 @@ void Simulation::update(float dt)
 	simulateBehaviour(dt);
 	checkFlags();
 	resolveCollisions(dt);
-	applyWaterForce();
+	//applyWaterForce();
 	applyMotion(dt);
 }
 
@@ -197,6 +197,13 @@ bool Simulation::checkEat(Plant* a, Plant* b, int i, int j)
 
 void Simulation::applyWaterForce()
 {
+	for (int i = 0; i < plants.size(); i++) {
+		Vec2f difVec = plants[i].position - (boxSize * 0.5f);
+		float mag = (difVec.y <= 0) ? 1.f : -1.f;
+		int axis = (difVec.x * difVec.y > 0) ? 0 : 1;
+
+		plants[i].velocity[axis] += mag * Config::waterSpeed;
+	}
 }
 
 void Simulation::applyMotion(float dt)
