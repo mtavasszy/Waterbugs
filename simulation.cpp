@@ -2,8 +2,8 @@
 #include "plant.h"
 
 #include <unordered_map>
-#include <unordered_set>
 #include <vector>
+#include <random>
 
 #include <SFML/Graphics.hpp>
 #include "config.h"
@@ -13,14 +13,24 @@ Simulation::Simulation(Vec2f boxSize)
 {
 	this->boxSize = boxSize;
 	collisionGrid = std::unordered_map<int, std::vector<int>>();
-	initialize();
+
+	std::random_device rd;
+	gen = std::mt19937(rd()); // Standard mersenne_twister_engine seeded with rd()
+	dis = std::uniform_real_distribution<>(0.f, 1.f);
+
+	initializePopulation();
 }
 
-void Simulation::initialize()
+void Simulation::initializePopulation()
 {
-	Plant plant(Vec2f(640, 360), 5.f);
+	Plant plant(getPlantRandomSeed(), Vec2f(640, 360), 5.f);
 	plant.chloroplastCount = 1;
 	plants.push_back(plant);
+}
+
+unsigned int Simulation::getPlantRandomSeed()
+{
+	return unsigned int(dis(gen) * float(UINT_MAX));
 }
 
 void Simulation::update(float dt)
@@ -46,8 +56,8 @@ void Simulation::checkFlags()
 {
 	for (int i = 0; i < plants.size(); i++) {
 		Plant* p = &plants[i];
-		if (p->reproduceFlag) {
-			plants.push_back(p->createOffspring());
+		if (p->reproduceFlag && plants.size() < Config::plantLimit) {
+			plants.push_back(p->createOffspring(getPlantRandomSeed()));
 		}
 	}
 }
@@ -102,7 +112,7 @@ void Simulation::resolveCollisions(float dt)
 						Plant* a = &plants[i];
 						for (int j : collisionGrid[coord]) {
 							// verify that collision with this obj has not been checked yet
-							if (std::find(collidedObjs.begin(),collidedObjs.end(), j) == collidedObjs.end()) {
+							if (std::find(collidedObjs.begin(), collidedObjs.end(), j) == collidedObjs.end()) {
 								Plant* b = &plants[j];
 								checkCollision(a, b, i, j, dt);
 								collidedObjs.push_back(j);

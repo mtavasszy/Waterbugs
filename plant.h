@@ -9,14 +9,14 @@
 class Plant {
 
 public:
-	Plant(Vec2f p, float r);
+	Plant(unsigned int seed, Vec2f p, float r);
 
-	void initRandom();
+	void initRandom(unsigned int seed);
 	float rnd();
 
 	void simulateBehaviour(float dt);
 
-	Plant createOffspring();
+	Plant createOffspring(unsigned int seed);
 	Vec2f getRandomOffset(float newradius);
 	float getCreationCost();
 

@@ -3,8 +3,8 @@
 #include "config.h"
 #include "Vec2.h"
 
-Plant::Plant(Vec2f p, float r) {
-	initRandom();
+Plant::Plant(unsigned int seed, Vec2f p, float r) {
+	initRandom(seed);
 
 	position = p;
 	radius = r;
@@ -20,10 +20,9 @@ Plant::Plant(Vec2f p, float r) {
 	lifeCost = 0.f; // TODO should depend on size/type
 }
 
-void Plant::initRandom()
+void Plant::initRandom(unsigned int seed)
 {
-	std::random_device rd;  // Will be used to obtain a seed for the random number engine
-	gen = std::mt19937(rd()); // Standard mersenne_twister_engine seeded with rd()
+	gen = std::mt19937(seed); // Standard mersenne_twister_engine seeded with rd()
 	dis = std::uniform_real_distribution<>(0.f, 1.f);
 }
 
@@ -55,7 +54,7 @@ void Plant::simulateBehaviour(float dt) {
 	}
 }
 
-Plant Plant::createOffspring()
+Plant Plant::createOffspring(unsigned int seed)
 {
 	reproduceFlag = false;
 	
@@ -64,7 +63,7 @@ Plant Plant::createOffspring()
 	position -= offset * 0.5;
 	velocity -= Config::replicatePushSpeed * offset;
 	Vec2f newPos = position + offset;
-	Plant offspring = Plant(newPos, radius);
+	Plant offspring = Plant(seed, newPos, radius);
 	offspring.velocity = Config::replicatePushSpeed * offset;
 	offspring.chloroplastCount = 1;
 	// TODO mutate
