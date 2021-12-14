@@ -171,7 +171,8 @@ void Simulation::checkCollision(Plant* a, Plant* b, int i, int j, float dt)
 		b->velocity = v_bn_new + v_bt_new;
 
 		// correct position
-		Vec2f midpoint = (a->position + b->position) * 0.5f;
+		float massRatio = a->mass / (a->mass + b->mass);
+		Vec2f midpoint = a->position*(1.f - massRatio) + b->position* massRatio;
 		a->position = midpoint - un * a->radius;
 		b->position = midpoint + un * b->radius;
 		//}
