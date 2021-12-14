@@ -1,6 +1,10 @@
 #include "simulation.h"
 #include "plant.h"
 
+#include <unordered_map>
+#include <unordered_set>
+#include <vector>
+
 #include <SFML/Graphics.hpp>
 #include "config.h"
 #include "Vec2.h"
@@ -8,6 +12,7 @@
 Simulation::Simulation(Vec2f boxSize)
 {
 	this->boxSize = boxSize;
+	collisionGrid = std::unordered_map<int, std::vector<int>>();
 	initialize();
 }
 
@@ -22,7 +27,7 @@ void Simulation::update(float dt)
 {
 	simulateBehaviour(dt);
 	checkFlags();
-	resolveCollisions(dt); // TODO multiple steps per frame?
+	resolveCollisions(dt);
 	applyWaterForce();
 	applyMotion(dt);
 }
@@ -48,6 +53,87 @@ void Simulation::checkFlags()
 }
 
 void Simulation::resolveCollisions(float dt)
+{
+	const float invGridCellSize = 1.f / Config::gridCellSize;
+
+	// reset grid
+	collisionGrid.clear();
+	std::unordered_set<int> collidedObjs;
+
+	for (int i = 0; i < plants.size(); i++) {
+		Plant* a = &plants[i];
+		
+		// add new to grid
+		int gridX0 = int((plants[i].position.x - plants[i].radius) * invGridCellSize);
+		int gridX1 = int((plants[i].position.x + plants[i].radius) * invGridCellSize);
+		int gridY0 = int((plants[i].position.y - plants[i].radius) * invGridCellSize);
+		int gridY1 = int((plants[i].position.y + plants[i].radius) * invGridCellSize);
+
+		bool isSingleCell = (gridX0 == gridX1) && (gridY0 == gridY1);
+
+		if (isSingleCell) {
+			int coord = gridX0+gridY0*int(boxSize.x);
+			if (collisionGrid.count(coord) == 0) {
+				// no other items in grid cell yet, add index
+				collisionGrid[coord] = std::vector<int>(i);
+			}
+			else {
+				// list of items found, check collisions
+				for (int j : collisionGrid[coord]) {
+					Plant* b = &plants[j];
+					checkCollision(a, b, i, j, dt);
+				}
+				collisionGrid[coord].push_back(i);
+			}
+		}
+		else {
+			collidedObjs.clear();
+
+			for (int xx = gridX0; xx <= gridX1; xx++) {
+				for (int yy = gridY0; yy <= gridY1; yy++) {
+					int coord = xx + int(yy*boxSize.x);
+					if (collisionGrid.count(coord) == 0) {
+						// no other items in grid cell yet, add index
+						collisionGrid[coord] = std::vector<int>(i);
+					}
+					else {
+						// list of items found, check collisions
+						Plant* a = &plants[i];
+						for (int j : collisionGrid[coord]) {
+							// verify that collision with this obj has not been checked yet
+							if (collidedObjs.count(j) == 0) {
+								Plant* b = &plants[j];
+								checkCollision(a, b, i, j, dt);
+								collidedObjs.insert(j);
+							}
+						}
+						collisionGrid[coord].push_back(i);
+					}
+				}
+			}
+		}
+
+		// walls
+		if (a->position.x < a->radius) {
+			a->position.x = a->radius;
+			a->velocity.x = -a->velocity.x;
+		}
+		if (a->position.y < a->radius) {
+			a->position.y = a->radius;
+			a->velocity.y = -a->velocity.y;
+		}
+		if (a->position.x > boxSize.x - a->radius) {
+			a->position.x = boxSize.x - a->radius;
+			a->velocity.x = -a->velocity.x;
+		}
+		if (a->position.y > boxSize.y - a->radius) {
+			a->position.y = boxSize.y - a->radius;
+			a->velocity.y = -a->velocity.y;
+		}
+	}
+}
+
+void Simulation::resolveCollisionsOld(float dt)
 {
 	for (int i = 0; i < plants.size(); i++) {
 		Plant* a = &plants[i];

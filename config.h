@@ -7,6 +7,9 @@
 class Config {
 
 public:
+	// simulator
+	static constexpr int gridCellSize = 10;
+
 	// simulation
 	static constexpr float friction = 0.3f;
 	// creatures
@@ -31,7 +34,7 @@ public:
 
 	static constexpr float energySizeFactor = 1.f;
 
-	static constexpr float replicatePushSpeed = 5.f;
+	static constexpr float replicatePushSpeed = 2.f;
 
 
 

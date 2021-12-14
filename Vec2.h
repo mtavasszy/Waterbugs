@@ -30,6 +30,14 @@ template <class T> const Vec2<T> operator- (const Vec2<T> & p1, const Vec2<T> & 
     return Vec2<T> (p1.x - p2.x, p1.y - p2.y);
 }
 
+template <class T> const Vec2<T> operator+ (const Vec2<T> & p1, float f) {
+    return Vec2<T> (p1.x + f, p1.y + f);
+}
+
+template <class T> const Vec2<T> operator- (const Vec2<T> & p1, float f) {
+    return Vec2<T> (p1.x - f, p1.y - f);
+}
+
 template <class T> const Vec2<T> operator- (const Vec2<T> & p) {
     return Vec2<T> (-p.x, -p.y);
 }
