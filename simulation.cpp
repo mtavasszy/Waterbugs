@@ -112,7 +112,14 @@ void Simulation::resolveCollisions(float dt)
 						Plant* a = &plants[i];
 						for (int j : collisionGrid[coord]) {
 							// verify that collision with this obj has not been checked yet
-							if (std::find(collidedObjs.begin(), collidedObjs.end(), j) == collidedObjs.end()) {
+							bool isAlreadyChecked = false;
+							for (int k : collidedObjs) {
+								if (k == j) {
+									isAlreadyChecked = true;
+									break;
+								}
+							}
+							if (!isAlreadyChecked) {
 								Plant* b = &plants[j];
 								checkCollision(a, b, i, j, dt);
 								collidedObjs.push_back(j);
