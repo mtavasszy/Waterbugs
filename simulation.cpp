@@ -58,7 +58,8 @@ void Simulation::resolveCollisions(float dt)
 
 	// reset grid
 	collisionGrid.clear();
-	std::unordered_set<int> collidedObjs;
+	std::vector<int> collidedObjs;
+	collidedObjs.reserve(100);
 
 	for (int i = 0; i < plants.size(); i++) {
 		Plant* a = &plants[i];
@@ -101,10 +102,10 @@ void Simulation::resolveCollisions(float dt)
 						Plant* a = &plants[i];
 						for (int j : collisionGrid[coord]) {
 							// verify that collision with this obj has not been checked yet
-							if (collidedObjs.count(j) == 0) {
+							if (std::find(collidedObjs.begin(),collidedObjs.end(), j) == collidedObjs.end()) {
 								Plant* b = &plants[j];
 								checkCollision(a, b, i, j, dt);
-								collidedObjs.insert(j);
+								collidedObjs.push_back(j);
 							}
 						}
 						collisionGrid[coord].push_back(i);
