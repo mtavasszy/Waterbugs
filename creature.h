@@ -1,22 +1,22 @@
-#ifndef PLANT_H_ 
-#define PLANT_H_
+#ifndef CREATURE_H_ 
+#define CREATURE_H_
 
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <random>
 #include "Vec2.h"
 
-class Plant {
+class Creature {
 
 public:
-	Plant(unsigned int seed, Vec2f p, float r);
+	Creature(unsigned int seed, Vec2f p, float r);
 
 	void initRandom(unsigned int seed);
 	float rnd();
 
 	void simulateBehaviour(float dt);
 
-	Plant createOffspring(unsigned int seed);
+	Creature createOffspring(unsigned int seed);
 	Vec2f getRandomOffset(float newradius);
 	float getCreationCost();
 
@@ -54,7 +54,7 @@ public:
 	Vec2f force;
 
 	// appendages
-	int chloroplastCount;
+
 };
 
-#endif  // PLANT_H_
+#endif  // CREATURE_H_

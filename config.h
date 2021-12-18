@@ -9,7 +9,7 @@ class Config {
 public:
 	// simulator
 	static constexpr int gridCellSize = 40;
-	static constexpr int plantLimit = 256;
+	static constexpr int plantLimit = 1024;
 
 	// simulation
 	static constexpr float friction = 0.3f;
@@ -17,6 +17,8 @@ public:
 	
 	// creatures
 	static sf::Color plantColor;
+	static sf::Color creatureColor;
+
 	// mass
 	static constexpr float plantMass = 0.5f;
 
@@ -25,7 +27,7 @@ public:
 	static constexpr float chloroplastCost = 10.f;
 
 	// limb creation costs
-	static constexpr float chloroplastGain = 5;
+	static constexpr float chloroplastGain = 20;
 	static constexpr float moveCost = 1;
 
 	// eating

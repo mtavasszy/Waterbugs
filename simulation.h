@@ -7,6 +7,7 @@
 #include <random>
 #include "Vec2.h"
 #include "plant.h"
+#include "creature.h"
 
 class Simulation {
 
@@ -28,6 +29,7 @@ public:
 	Vec2f boxSize;
 	std::unordered_map<int, std::vector<int>> collisionGrid;
 	std::vector<Plant> plants;
+	std::vector<Creature> creatures;
 	//std::vector<int> deleteList; // for eating
 
 	// random

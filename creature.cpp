@@ -1,9 +1,9 @@
-#include "plant.h"
+#include "creature.h"
 #include <random>
 #include "config.h"
 #include "Vec2.h"
 
-Plant::Plant(unsigned int seed, Vec2f p, float r) {
+Creature::Creature(unsigned int seed, Vec2f p, float r) {
 	initRandom(seed);
 
 	position = p;
@@ -22,24 +22,21 @@ Plant::Plant(unsigned int seed, Vec2f p, float r) {
 	initDrawShape();
 }
 
-void Plant::initRandom(unsigned int seed)
+void Creature::initRandom(unsigned int seed)
 {
 	gen = std::mt19937(seed); // Standard mersenne_twister_engine seeded with rd()
 	dis = std::uniform_real_distribution<>(0.f, 1.f);
 }
 
-float Plant::rnd()
+float Creature::rnd()
 {
 	return float(dis(gen));
 }
 
-void Plant::simulateBehaviour(float dt) {
+void Creature::simulateBehaviour(float dt) {
 	// constants
 	energy -= lifeCost * dt;
 	age += 1.f * dt;
-
-	// Constant energy from cloroplasts
-	energy += chloroplastCount * Config::chloroplastGain * dt;
 
 	// death
 	if (energy < 0 || age > maxAge) {
@@ -56,7 +53,7 @@ void Plant::simulateBehaviour(float dt) {
 	}
 }
 
-Plant Plant::createOffspring(unsigned int seed)
+Creature Creature::createOffspring(unsigned int seed)
 {
 	reproduceFlag = false;
 	
@@ -65,9 +62,8 @@ Plant Plant::createOffspring(unsigned int seed)
 	position -= offset * 0.5;
 	velocity -= Config::replicatePushSpeed * offset;
 	Vec2f newPos = position + offset;
-	Plant offspring = Plant(seed, newPos, radius);
+	Creature offspring = Creature(seed, newPos, radius);
 	offspring.velocity = Config::replicatePushSpeed * offset;
-	offspring.chloroplastCount = 1;
 	// TODO mutate
 	// TODO type depends on mutation
 
@@ -75,18 +71,18 @@ Plant Plant::createOffspring(unsigned int seed)
 	return offspring;
 }
 
-Vec2f Plant::getRandomOffset(float newradius)
+Vec2f Creature::getRandomOffset(float newradius)
 {
 	float a = 2 * PI * rnd();
 	return Vec2f(cos(a), sin(a)) * (radius+newradius);
 }
 
-float Plant::getCreationCost()
+float Creature::getCreationCost()
 {
 	return Config::sizeCost * size; // TODO let this depend on size and appendages
 }
 
-sf::Color Plant::mixColors(sf::Color x, sf::Color y, float factor) {
+sf::Color Creature::mixColors(sf::Color x, sf::Color y, float factor) {
 	int r = int(x.r * (1 - factor) + y.r * factor);
 	int g = int(x.g * (1 - factor) + y.g * factor);
 	int b = int(x.b * (1 - factor) + y.b * factor);
@@ -94,7 +90,7 @@ sf::Color Plant::mixColors(sf::Color x, sf::Color y, float factor) {
 	return sf::Color(r, g, b);
 }
 
-sf::Color Plant::getColor()
+sf::Color Creature::getColor()
 {
 	sf::Color deadColor(50, 50, 0);
 	if (deathFlag)
@@ -107,14 +103,14 @@ sf::Color Plant::getColor()
 	return mixColors(youngColor, deadColor, ageRatio * ageRatio);
 }
 
-void Plant::initDrawShape()
+void Creature::initDrawShape()
 {
 	circle = sf::CircleShape(radius);
 	//circle.setPointCount(20);
-	circle.setFillColor(Config::plantColor);
+	circle.setFillColor(Config::creatureColor);
 }
 
-void Plant::draw(sf::RenderWindow& window) {
+void Creature::draw(sf::RenderWindow& window) {
 	const Vec2f drawPos = position - Vec2f(circle.getRadius());
 	circle.setPosition(sf::Vector2f(drawPos.x, drawPos.y));
 	window.draw(circle);
